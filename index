@@ -1,0 +1,1533 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#102a43">
+<title>Organización del equipo | AAE</title>
+
+<style>
+:root {
+  --navy: #102a43;
+  --blue: #1769aa;
+  --bg: #f4f7fb;
+  --text: #182230;
+  --muted: #65758b;
+  --line: #dce4ed;
+  --white: #ffffff;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+  color: var(--text);
+}
+
+header {
+  background: linear-gradient(120deg, #102a43, #1769aa);
+  color: white;
+  padding: 20px max(18px, calc((100% - 1200px)/2));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+
+.club-logo {
+  width: 62px;
+  height: 62px;
+  object-fit: contain;
+  flex-shrink: 0;
+  background: white;
+  border-radius: 12px;
+  padding: 4px;
+}
+
+.brand h1 {
+  font-size: 19px;
+  margin: 0;
+}
+
+.brand p {
+  font-size: 12px;
+  opacity: .85;
+  margin: 5px 0 0;
+}
+
+.header-label {
+  font-size: 12px;
+  opacity: .9;
+}
+
+main {
+  max-width: 1200px;
+  margin: 22px auto;
+  padding: 0 16px 48px;
+}
+
+.toolbar, .who, .tabs, .row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.toolbar {
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.who label {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--muted);
+}
+
+select, input, textarea {
+  font: inherit;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px 11px;
+  background: white;
+  color: var(--text);
+  width: 100%;
+  min-width: 0;
+}
+
+button {
+  font: inherit;
+  border: 0;
+  border-radius: 10px;
+  padding: 10px 14px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+button:focus-visible, input:focus-visible,
+select:focus-visible, textarea:focus-visible {
+  outline: 3px solid #8dc8ff;
+  outline-offset: 2px;
+}
+
+.primary { background: var(--blue); color: white; }
+.secondary { background: #e7edf4; color: #20364c; }
+.danger { background: #fee4e2; color: #b42318; }
+.small { padding: 6px 9px; font-size: 12px; }
+
+.tabs { margin-bottom: 18px; }
+.tab { background: #e6edf5; color: #37516a; }
+.tab.active { background: var(--navy); color: white; }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.stat, .panel, .person-card {
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 2px 6px #0c22380a;
+}
+
+.stat .k { font-size: 12px; color: var(--muted); }
+.stat .v { font-size: 27px; font-weight: 800; margin-top: 7px; }
+.stat .sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+.panel { margin-bottom: 16px; }
+.panel h2 { font-size: 17px; margin: 0 0 14px; }
+.panel h3 { font-size: 14px; margin: 0 0 10px; }
+
+.row > * { flex: 1; }
+.row .fixed { flex: 0 0 auto; }
+
+.muted { color: var(--muted); font-size: 13px; }
+
+.people-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.person-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.person-name { font-weight: 800; }
+
+.pill {
+  display: inline-block;
+  border-radius: 99px;
+  padding: 4px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  background: #e8eef5;
+  color: #42556a;
+}
+
+.event-item, .task-item {
+  border-top: 1px solid var(--line);
+  padding: 12px 0;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.event-item:first-child, .task-item:first-child { border-top: 0; }
+.event-title { font-weight: 750; font-size: 14px; }
+
+.event-meta {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 4px;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+
+.empty {
+  padding: 22px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.field label {
+  display: block;
+  font-size: 12px;
+  font-weight: 750;
+  color: #526277;
+  margin-bottom: 6px;
+}
+
+.field.full { grid-column: 1 / -1; }
+
+.calendar-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.calendar {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.day-name {
+  text-align: center;
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 800;
+  padding: 6px 0;
+}
+
+.day {
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  min-height: 110px;
+  padding: 7px;
+  overflow: hidden;
+}
+
+.day.outside { opacity: .45; }
+.day.today { border: 2px solid var(--blue); }
+.day-num { font-size: 12px; font-weight: 800; margin-bottom: 6px; }
+
+.cal-event {
+  font-size: 10px;
+  line-height: 1.35;
+  padding: 4px 5px;
+  border-radius: 5px;
+  margin: 3px 0;
+  overflow-wrap: anywhere;
+}
+
+.week-list {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.week-col {
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  min-height: 140px;
+  padding: 8px;
+  min-width: 0;
+}
+
+.week-date { font-size: 12px; font-weight: 800; margin-bottom: 8px; }
+
+.avail-row {
+  display: flex;
+  gap: 9px;
+  align-items: center;
+  border-top: 1px solid var(--line);
+  padding: 10px 0;
+  font-size: 12px;
+}
+
+.avail-row:first-child { border-top: 0; }
+
+.dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  display: inline-block;
+  flex: none;
+}
+
+.notice {
+  background: #fff8e6;
+  border: 1px solid #f3d48c;
+  border-radius: 12px;
+  padding: 12px;
+  font-size: 12px;
+  color: #704d08;
+  margin-bottom: 14px;
+  line-height: 1.5;
+}
+
+.hidden { display: none !important; }
+.status { font-size: 12px; color: var(--muted); min-height: 18px; margin: 6px 0; }
+
+.legend {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 8px 0 14px;
+}
+
+.legend span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+@media (max-width: 850px) {
+  .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .people-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .week-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .day { min-height: 85px; }
+  .cal-event { font-size: 9px; }
+}
+
+@media (max-width: 560px) {
+  header { padding: 15px; }
+  .club-logo { width: 52px; height: 52px; }
+  .brand h1 { font-size: 16px; }
+  .header-label { display: none; }
+  main { margin-top: 14px; }
+  .grid, .people-grid, .form-grid { grid-template-columns: 1fr; }
+  .field.full { grid-column: auto; }
+  .calendar { gap: 3px; }
+  .day { padding: 4px; min-height: 65px; border-radius: 7px; }
+  .day-num { font-size: 10px; }
+  .cal-event { font-size: 8px; padding: 3px; }
+  .day-name { font-size: 9px; }
+  .week-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .toolbar { align-items: flex-start; }
+  .event-item, .task-item { gap: 7px; }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="brand">
+    <img
+      src="./logoaae.png"
+      alt="Logo de Asociación Atlética Estudiantes de Río Cuarto"
+      class="club-logo"
+    >
+    <div>
+      <h1>Organización del equipo</h1>
+      <p>Agenda · Disponibilidad · Actividades</p>
+    </div>
+  </div>
+  <div class="header-label">Panel interno de coordinación</div>
+</header>
+
+<main id="app">
+
+  <div class="notice">
+    El ingreso es por nombre, sin contraseña. Cualquier usuario podría
+    seleccionar el nombre de otra persona. No carguen información sensible.
+  </div>
+
+  <div class="toolbar">
+    <div class="who">
+      <label for="personSelect">INGRESAR COMO</label>
+      <select id="personSelect" style="width:auto;min-width:150px"></select>
+      <button class="primary" id="enterBtn">Entrar</button>
+    </div>
+    <button class="secondary" id="refreshBtn">↻ Actualizar datos</button>
+  </div>
+
+  <div id="status" class="status">Conectando con la agenda…</div>
+
+  <nav class="tabs" id="tabs">
+    <button class="tab active" data-view="dashboard">Resumen</button>
+    <button class="tab" data-view="calendar">Calendario</button>
+    <button class="tab" data-view="availability">Disponibilidad</button>
+    <button class="tab" data-view="events">Actividades</button>
+    <button class="tab" data-view="tasks">Tareas y pedidos</button>
+  </nav>
+
+  <section id="dashboardView"></section>
+  <section id="calendarView" class="hidden"></section>
+  <section id="availabilityView" class="hidden"></section>
+  <section id="eventsView" class="hidden"></section>
+  <section id="tasksView" class="hidden"></section>
+
+</main>
+
+<script>
+/*
+ * IMPORTANTE:
+ * Reemplazar la URL de ejemplo por la URL real de Apps Script.
+ * Debe terminar en /exec.
+ */
+const API_URL = 'PEGAR_URL_WEB_APP_AQUI';
+
+const PEOPLE = ['SOFI', 'TIZI', 'ALE', 'MARTIN', 'MAGA', 'ENZO'];
+
+const COLORS = {
+  SOFI: '#1769aa',
+  TIZI: '#8b5cf6',
+  ALE: '#0f9f77',
+  MARTIN: '#d97706',
+  MAGA: '#db2777',
+  ENZO: '#475569',
+  TODOS: '#102a43'
+};
+
+const PALE = {
+  SOFI: '#e4f0ff',
+  TIZI: '#f0eaff',
+  ALE: '#e1f7ee',
+  MARTIN: '#fff0dc',
+  MAGA: '#ffe5f0',
+  ENZO: '#e8edf2',
+  TODOS: '#e2e8f0'
+};
+
+const $ = id => document.getElementById(id);
+
+let state = {
+  person: localStorage.getItem('clubPerson') || 'SOFI',
+  data: {
+    people: [],
+    availability: [],
+    events: [],
+    tasks: []
+  },
+  view: 'dashboard',
+  calMode: 'month',
+  calDate: new Date(),
+  eventEdit: null
+};
+
+const todayISO = () => {
+  const d = new Date();
+
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+};
+
+const dateISO = d =>
+  `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+
+const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({
+  '&': '&amp;',
+  '<': '&lt;',
+  '>': '&gt;',
+  '"': '&quot;',
+  "'": '&#39;'
+}[c]));
+
+const personColor = p => COLORS[p] || '#64748b';
+const personPale = p => PALE[p] || '#edf2f7';
+
+const fmtDate = value => {
+  if (!value) return 'Sin fecha';
+
+  const [y,m,d] = String(value).slice(0,10).split('-').map(Number);
+
+  return new Date(y,m-1,d).toLocaleDateString('es-AR', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric'
+  });
+};
+
+const fmtShort = value => {
+  if (!value) return '';
+
+  const [y,m,d] = String(value).slice(0,10).split('-').map(Number);
+
+  return new Date(y,m-1,d).toLocaleDateString('es-AR', {
+    weekday: 'short',
+    day: 'numeric',
+    month: 'short'
+  });
+};
+
+function setStatus(message, error = false) {
+  $('status').textContent = message;
+  $('status').style.color = error ? '#b42318' : '#65758b';
+}
+
+/*
+ * Comunicación con Apps Script mediante JSONP.
+ */
+function api(action, data = {}) {
+  return new Promise((resolve, reject) => {
+    if (!API_URL || API_URL.includes('PEGAR_URL')) {
+      reject(new Error(
+        'Falta pegar la URL real de Apps Script en index.html.'
+      ));
+      return;
+    }
+
+    const callback = 'clubCallback' +
+      Date.now() +
+      Math.floor(Math.random() * 100000);
+
+    const script = document.createElement('script');
+
+    const timer = setTimeout(() => {
+      cleanup();
+
+      reject(new Error(
+        'La conexión tardó demasiado. Revisá la URL y los permisos de Apps Script.'
+      ));
+    }, 15000);
+
+    function cleanup() {
+      clearTimeout(timer);
+
+      try {
+        delete window[callback];
+      } catch (e) {
+        window[callback] = undefined;
+      }
+
+      script.remove();
+    }
+
+    window[callback] = result => {
+      cleanup();
+
+      if (result && result.ok === false) {
+        reject(new Error(result.error || 'Error del servidor'));
+      } else {
+        resolve(result);
+      }
+    };
+
+    const params = new URLSearchParams({
+      action,
+      callback
+    });
+
+    if (Object.keys(data).length) {
+      params.set('data', JSON.stringify(data));
+    }
+
+    script.onerror = () => {
+      cleanup();
+
+      reject(new Error(
+        'No se pudo conectar con Apps Script. Revisá la implementación y sus permisos.'
+      ));
+    };
+
+    script.src = API_URL + '?' + params.toString();
+    document.body.appendChild(script);
+  });
+}
+
+async function loadData(silent = false) {
+  try {
+    if (!silent) setStatus('Actualizando información…');
+
+    const data = await api('init');
+    state.data = data;
+
+    renderAll();
+
+    setStatus(
+      'Datos actualizados · ' +
+      new Date().toLocaleTimeString('es-AR', {
+        hour: '2-digit',
+        minute: '2-digit'
+      })
+    );
+  } catch (error) {
+    setStatus(error.message, true);
+
+    if (!state.data.people.length && !state.data.events.length) {
+      renderAll();
+    }
+  }
+}
+
+function init() {
+  $('personSelect').innerHTML = PEOPLE.map(person =>
+    `<option value="${person}">${person}</option>`
+  ).join('');
+
+  $('personSelect').value = state.person;
+
+  $('enterBtn').onclick = () => {
+    state.person = $('personSelect').value;
+
+    localStorage.setItem('clubPerson', state.person);
+
+    renderAll();
+
+    setStatus('Panel abierto para ' + state.person);
+  };
+
+  $('refreshBtn').onclick = () => loadData();
+
+  $('tabs').addEventListener('click', event => {
+    const button = event.target.closest('[data-view]');
+
+    if (!button) return;
+
+    showView(button.dataset.view);
+  });
+
+  loadData();
+}
+
+function showView(view) {
+  state.view = view;
+
+  document.querySelectorAll('.tab').forEach(button => {
+    button.classList.toggle(
+      'active',
+      button.dataset.view === view
+    );
+  });
+
+  ['dashboard', 'calendar', 'availability', 'events', 'tasks']
+    .forEach(name => {
+      $(name + 'View').classList.toggle('hidden', name !== view);
+    });
+
+  renderAll();
+}
+
+function renderAll() {
+  renderDashboard();
+  renderCalendar();
+  renderAvailability();
+  renderEvents();
+  renderTasks();
+}
+
+function sortedEvents() {
+  return [...(state.data.events || [])].sort((a,b) =>
+    (a.date + a.start).localeCompare(b.date + b.start)
+  );
+}
+
+function statusPill(status) {
+  const color = status === 'Realizada' ? '#18845b'
+    : status === 'Cancelada' ? '#b42318'
+    : status === 'En curso' ? '#1769aa'
+    : '#8a5b0a';
+
+  return `<span class="pill" style="color:${color}">${esc(status || 'Agendado')}</span>`;
+}
+
+function eventCard(event, controls = false) {
+  return `
+    <div class="event-item">
+      <div style="min-width:0">
+        <div class="event-title">
+          <span class="dot" style="background:${personColor(event.person)};margin-right:5px"></span>
+          ${esc(event.title)}
+        </div>
+
+        <div class="event-meta">
+          ${esc(event.person)} · ${fmtDate(event.date)} ·
+          ${esc(event.start || '')}–${esc(event.end || '')}<br>
+
+          ${esc(event.type || 'Actividad')}
+          ${event.location ? ' · ' + esc(event.location) : ''}
+
+          ${event.needs
+            ? '<br><b>Necesita:</b> ' + esc(event.needs)
+            : ''}
+
+          ${event.description
+            ? '<br>' + esc(event.description)
+            : ''}
+        </div>
+
+        <div style="margin-top:6px">
+          ${statusPill(event.status)}
+        </div>
+      </div>
+
+      ${controls ? `
+        <div class="row fixed" style="flex-direction:column;align-items:flex-end">
+          <button class="secondary small" onclick="editEvent('${esc(event.id)}')">Editar</button>
+          <button class="danger small" onclick="removeEvent('${esc(event.id)}')">Borrar</button>
+        </div>
+      ` : ''}
+    </div>
+  `;
+}
+
+/* RESUMEN GENERAL */
+
+function renderDashboard() {
+  const today = todayISO();
+  const events = sortedEvents();
+  const tasks = state.data.tasks || [];
+
+  const todayEvents = events.filter(event =>
+    event.date === today && event.status !== 'Cancelada'
+  );
+
+  const upcoming = events.filter(event =>
+    event.date >= today && event.status !== 'Cancelada'
+  ).slice(0, 6);
+
+  const pending = tasks.filter(task => task.status !== 'Hecha').length;
+
+  $('dashboardView').innerHTML = `
+    <div class="grid">
+      <div class="stat">
+        <div class="k">COLABORADORES</div>
+        <div class="v">${PEOPLE.length}</div>
+        <div class="sub">Equipo registrado</div>
+      </div>
+
+      <div class="stat">
+        <div class="k">ACTIVIDADES HOY</div>
+        <div class="v">${todayEvents.length}</div>
+        <div class="sub">${fmtDate(today)}</div>
+      </div>
+
+      <div class="stat">
+        <div class="k">PRÓXIMAS ACTIVIDADES</div>
+        <div class="v">${events.filter(event =>
+          event.date >= today && event.status !== 'Cancelada'
+        ).length}</div>
+        <div class="sub">Desde hoy en adelante</div>
+      </div>
+
+      <div class="stat">
+        <div class="k">TAREAS PENDIENTES</div>
+        <div class="v">${pending}</div>
+        <div class="sub">Por completar</div>
+      </div>
+    </div>
+
+    <div class="panel" style="margin-top:16px">
+      <h2>Equipo · situación general</h2>
+
+      <div class="people-grid">
+        ${PEOPLE.map(person => {
+          const availability = state.data.availability.filter(item =>
+            item.person === person && item.date === today
+          );
+
+          const personalEvents = events.filter(event =>
+            (event.person === person || event.person === 'TODOS') &&
+            event.date === today &&
+            event.status !== 'Cancelada'
+          );
+
+          return `
+            <div class="person-card">
+              <div class="person-head">
+                <div class="avatar"
+                  style="background:${personPale(person)};color:${personColor(person)}">
+                  ${person.slice(0,2)}
+                </div>
+
+                <div>
+                  <div class="person-name">${person}</div>
+                  <div class="muted">
+                    ${personalEvents.length
+                      ? personalEvents.length + ' actividad(es) hoy'
+                      : 'Sin actividades agendadas hoy'}
+                  </div>
+                </div>
+              </div>
+
+              ${availability.length
+                ? availability.map(item => `
+                    <div class="event-meta">
+                      ${esc(item.start)}–${esc(item.end)} · ${esc(item.status)}
+                      ${item.description ? ' · ' + esc(item.description) : ''}
+                    </div>
+                  `).join('')
+                : '<div class="event-meta">Disponibilidad no informada para hoy.</div>'}
+
+              ${personalEvents.map(event => `
+                <div class="event-meta" style="margin-top:7px">
+                  <b>${esc(event.start)} ${esc(event.title)}</b>
+                  · ${esc(event.status || 'Agendado')}
+                </div>
+              `).join('')}
+            </div>
+          `;
+        }).join('')}
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Próximas actividades</h2>
+
+      ${upcoming.length
+        ? upcoming.map(event => eventCard(event)).join('')
+        : '<div class="empty">Todavía no hay actividades agendadas.</div>'}
+
+      <button class="primary" onclick="showView('events')">+ Cargar actividad</button>
+    </div>
+
+    <div class="panel">
+      <h2>Tareas que requieren seguimiento</h2>
+
+      ${tasks.filter(task => task.status !== 'Hecha')
+        .slice(0,5)
+        .map(taskCard)
+        .join('')
+        || '<div class="empty">No hay tareas pendientes registradas.</div>'}
+    </div>
+  `;
+}
+
+/* CALENDARIO SEMANAL Y MENSUAL */
+
+function startWeek(date) {
+  const d = new Date(date);
+
+  d.setHours(0,0,0,0);
+  d.setDate(d.getDate() - ((d.getDay() + 6) % 7));
+
+  return d;
+}
+
+function moveCalendar(amount) {
+  if (state.calMode === 'month') {
+    state.calDate = new Date(
+      state.calDate.getFullYear(),
+      state.calDate.getMonth() + amount,
+      1
+    );
+  } else {
+    state.calDate = new Date(state.calDate);
+    state.calDate.setDate(state.calDate.getDate() + amount * 7);
+  }
+
+  renderCalendar();
+}
+
+function calendarToday() {
+  state.calDate = new Date();
+  renderCalendar();
+}
+
+function setCalMode(mode) {
+  state.calMode = mode;
+  renderCalendar();
+}
+
+function renderCalendar() {
+  const root = $('calendarView');
+  const date = new Date(state.calDate);
+  const mode = state.calMode;
+
+  const months = [
+    'enero','febrero','marzo','abril','mayo','junio',
+    'julio','agosto','septiembre','octubre','noviembre','diciembre'
+  ];
+
+  const title = mode === 'month'
+    ? `${months[date.getMonth()]} ${date.getFullYear()}`
+    : `Semana del ${fmtShort(dateISO(startWeek(date)))}`;
+
+  root.innerHTML = `
+    <div class="panel">
+      <div class="calendar-head">
+        <div>
+          <h2 style="margin:0">Calendario del equipo</h2>
+          <div class="muted">Cada color identifica a un colaborador</div>
+        </div>
+
+        <div class="row fixed">
+          <button class="secondary" onclick="moveCalendar(-1)">‹</button>
+          <button class="secondary" onclick="calendarToday()">Hoy</button>
+          <button class="secondary" onclick="moveCalendar(1)">›</button>
+          <button class="${mode === 'month' ? 'primary' : 'secondary'}"
+            onclick="setCalMode('month')">Mes</button>
+          <button class="${mode === 'week' ? 'primary' : 'secondary'}"
+            onclick="setCalMode('week')">Semana</button>
+        </div>
+      </div>
+
+      <h3 style="text-transform:capitalize">${title}</h3>
+
+      <div class="legend">
+        ${PEOPLE.map(person => `
+          <span>
+            <i class="dot" style="background:${personColor(person)}"></i>
+            ${person}
+          </span>
+        `).join('')}
+      </div>
+
+      ${mode === 'month' ? monthCalendar(date) : weekCalendar(date)}
+
+      <div style="margin-top:14px">
+        <button class="primary" onclick="showView('events')">+ Agregar actividad</button>
+      </div>
+    </div>
+  `;
+}
+
+function monthCalendar(date) {
+  const first = new Date(date.getFullYear(), date.getMonth(), 1);
+  const start = startWeek(first);
+  const today = todayISO();
+
+  let html = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom']
+    .map(day => `<div class="day-name">${day}</div>`)
+    .join('');
+
+  for (let i = 0; i < 42; i++) {
+    const current = new Date(start);
+
+    current.setDate(start.getDate() + i);
+
+    const iso = dateISO(current);
+
+    const events = sortedEvents().filter(event =>
+      event.date === iso && event.status !== 'Cancelada'
+    );
+
+    html += `
+      <div class="day ${current.getMonth() !== date.getMonth() ? 'outside' : ''} ${iso === today ? 'today' : ''}">
+        <div class="day-num">${current.getDate()}</div>
+
+        ${events.slice(0,3).map(event => `
+          <div class="cal-event"
+            title="${esc(event.title)} · ${esc(event.person)}"
+            style="background:${personPale(event.person)};border-left:3px solid ${personColor(event.person)}">
+            ${esc(event.start)} ${esc(event.title)}
+          </div>
+        `).join('')}
+
+        ${events.length > 3
+          ? `<div class="muted">+${events.length-3} más</div>`
+          : ''}
+      </div>
+    `;
+  }
+
+  return `<div class="calendar">${html}</div>`;
+}
+
+function weekCalendar(date) {
+  const start = startWeek(date);
+
+  return `
+    <div class="week-list">
+      ${Array.from({length:7}, (_,i) => {
+        const current = new Date(start);
+
+        current.setDate(start.getDate() + i);
+
+        const iso = dateISO(current);
+
+        const events = sortedEvents().filter(event =>
+          event.date === iso && event.status !== 'Cancelada'
+        );
+
+        return `
+          <div class="week-col">
+            <div class="week-date">${fmtShort(iso)}</div>
+
+            ${events.map(event => `
+              <div class="cal-event"
+                style="background:${personPale(event.person)};border-left:3px solid ${personColor(event.person)}">
+                <b>${esc(event.start)}–${esc(event.end)}</b><br>
+                ${esc(event.title)}<br>
+                ${esc(event.person)}
+              </div>
+            `).join('') || '<div class="muted">Sin eventos</div>'}
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+}
+
+/* DISPONIBILIDAD */
+
+function renderAvailability() {
+  const all = state.data.availability || [];
+
+  const mine = all.filter(item => item.person === state.person)
+    .sort((a,b) => (a.date+a.start).localeCompare(b.date+b.start));
+
+  $('availabilityView').innerHTML = `
+    <div class="panel">
+      <h2>Registrar disponibilidad</h2>
+
+      <p class="muted">
+        Indicá el día, el horario y si estás disponible u ocupado.
+        Podés registrar universidad, trabajo u otros compromisos.
+      </p>
+
+      <form id="availabilityForm">
+        <div class="form-grid">
+          <div class="field">
+            <label>Colaborador</label>
+            <select name="person">
+              ${PEOPLE.map(person => `
+                <option ${person === state.person ? 'selected' : ''}>${person}</option>
+              `).join('')}
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Fecha</label>
+            <input type="date" name="date" value="${todayISO()}" required>
+          </div>
+
+          <div class="field">
+            <label>Desde</label>
+            <input type="time" name="start" value="09:00" required>
+          </div>
+
+          <div class="field">
+            <label>Hasta</label>
+            <input type="time" name="end" value="13:00" required>
+          </div>
+
+          <div class="field">
+            <label>Estado</label>
+            <select name="status">
+              <option>Disponible</option>
+              <option>Ocupado</option>
+              <option>No disponible</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Motivo / actividad</label>
+            <input name="description" placeholder="Universidad, trámite, trabajo…">
+          </div>
+        </div>
+
+        <div style="margin-top:12px">
+          <button class="primary">Guardar disponibilidad</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="panel">
+      <h2>Disponibilidad registrada · ${state.person}</h2>
+
+      ${mine.length ? mine.map(item => `
+        <div class="avail-row">
+          <div style="min-width:95px">
+            <b>${fmtShort(item.date)}</b>
+          </div>
+
+          <div style="min-width:95px">
+            ${esc(item.start)}–${esc(item.end)}
+          </div>
+
+          <div style="flex:1">
+            <span class="pill">${esc(item.status)}</span>
+            ${esc(item.description || '')}
+          </div>
+        </div>
+      `).join('') : '<div class="empty">Todavía no cargaste disponibilidad.</div>'}
+    </div>
+
+    <div class="panel">
+      <h2>Disponibilidad del equipo · próximos 7 días</h2>
+      ${teamAvailability()}
+    </div>
+  `;
+
+  const form = $('availabilityForm');
+
+  form.onsubmit = async event => {
+    event.preventDefault();
+
+    const data = Object.fromEntries(new FormData(form).entries());
+
+    if (data.end <= data.start) {
+      setStatus('La hora final debe ser posterior a la inicial.', true);
+      return;
+    }
+
+    try {
+      await api('saveAvailability', data);
+      setStatus('Disponibilidad guardada.');
+      await loadData(true);
+    } catch (error) {
+      setStatus(error.message, true);
+    }
+  };
+}
+
+function teamAvailability() {
+  const start = new Date();
+
+  return `
+    <div class="week-list">
+      ${Array.from({length:7}, (_,i) => {
+        const current = new Date(start);
+
+        current.setDate(current.getDate() + i);
+
+        const iso = dateISO(current);
+
+        const rows = (state.data.availability || []).filter(item =>
+          item.date === iso
+        );
+
+        return `
+          <div class="week-col">
+            <div class="week-date">${fmtShort(iso)}</div>
+
+            ${rows.map(item => `
+              <div class="event-meta" style="margin:6px 0">
+                <span class="dot" style="background:${personColor(item.person)}"></span>
+                <b>${esc(item.person)}</b><br>
+                ${esc(item.start)}–${esc(item.end)}<br>
+                ${esc(item.status)}
+                ${item.description ? ' · ' + esc(item.description) : ''}
+              </div>
+            `).join('') || '<div class="muted">Sin datos</div>'}
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+}
+
+/* ACTIVIDADES Y COBERTURAS */
+
+function renderEvents() {
+  const editing = state.eventEdit || {};
+
+  $('eventsView').innerHTML = `
+    <div class="panel">
+      <h2>${editing.id ? 'Editar actividad' : 'Agregar actividad o cobertura'}</h2>
+
+      <p class="muted">
+        Cargá partidos, coberturas, reuniones, contenido para redes
+        y otros compromisos del club.
+      </p>
+
+      <form id="eventForm">
+        <input type="hidden" name="id" value="${esc(editing.id || '')}">
+
+        <div class="form-grid">
+          <div class="field">
+            <label>Nombre de la actividad *</label>
+            <input name="title" required
+              value="${esc(editing.title || '')}"
+              placeholder="Ej.: Cobertura de entrenamiento">
+          </div>
+
+          <div class="field">
+            <label>Responsable *</label>
+            <select name="person">
+              ${['TODOS', ...PEOPLE].map(person => `
+                <option ${person === (editing.person || state.person) ? 'selected' : ''}>${person}</option>
+              `).join('')}
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Fecha *</label>
+            <input type="date" name="date" required
+              value="${esc(editing.date || todayISO())}">
+          </div>
+
+          <div class="field">
+            <label>Tipo de actividad *</label>
+            <select name="type">
+              ${[
+                'Prensa',
+                'Partido',
+                'Cobertura',
+                'Reunión',
+                'Contenido para redes',
+                'Gestión institucional',
+                'Otro'
+              ].map(type => `
+                <option ${type === (editing.type || 'Prensa') ? 'selected' : ''}>${type}</option>
+              `).join('')}
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Hora de inicio *</label>
+            <input type="time" name="start" required
+              value="${esc(editing.start || '10:00')}">
+          </div>
+
+          <div class="field">
+            <label>Hora de finalización *</label>
+            <input type="time" name="end" required
+              value="${esc(editing.end || '11:00')}">
+          </div>
+
+          <div class="field">
+            <label>Lugar</label>
+            <input name="location"
+              value="${esc(editing.location || '')}"
+              placeholder="Estadio, predio, universidad…">
+          </div>
+
+          <div class="field">
+            <label>Estado</label>
+            <select name="status">
+              ${[
+                'Agendado',
+                'Confirmado',
+                'En curso',
+                'Realizada',
+                'Cancelada'
+              ].map(status => `
+                <option ${status === (editing.status || 'Agendado') ? 'selected' : ''}>${status}</option>
+              `).join('')}
+            </select>
+          </div>
+
+          <div class="field full">
+            <label>Qué hay que hacer / detalles</label>
+            <textarea name="description" rows="3"
+              placeholder="Objetivo, persona a contactar, contenido a preparar…">${esc(editing.description || '')}</textarea>
+          </div>
+
+          <div class="field full">
+            <label>Qué necesita llevar o pedir</label>
+            <textarea name="needs" rows="2"
+              placeholder="Cámara, micrófono, acreditación, pedir entrevista…">${esc(editing.needs || '')}</textarea>
+          </div>
+        </div>
+
+        <div class="row" style="margin-top:12px">
+          <button class="primary">
+            ${editing.id ? 'Guardar cambios' : 'Guardar actividad'}
+          </button>
+
+          ${editing.id
+            ? '<button type="button" class="secondary" id="cancelEdit">Cancelar edición</button>'
+            : ''}
+        </div>
+      </form>
+    </div>
+
+    <div class="panel">
+      <div class="row">
+        <h2 style="margin:0">Agenda de actividades</h2>
+
+        <div style="max-width:250px">
+          <select id="eventFilter">
+            <option value="TODOS">Todos los colaboradores</option>
+            ${PEOPLE.map(person => `
+              <option ${person === state.person ? 'selected' : ''}>${person}</option>
+            `).join('')}
+          </select>
+        </div>
+      </div>
+
+      <div id="eventList"></div>
+    </div>
+  `;
+
+  const form = $('eventForm');
+
+  form.onsubmit = async event => {
+    event.preventDefault();
+
+    const data = Object.fromEntries(new FormData(form).entries());
+
+    if (data.end <= data.start) {
+      setStatus('La hora final debe ser posterior a la inicial.', true);
+      return;
+    }
+
+    try {
+      await api('saveEvent', data);
+
+      state.eventEdit = null;
+
+      setStatus('Actividad guardada.');
+
+      await loadData(true);
+    } catch (error) {
+      setStatus(error.message, true);
+    }
+  };
+
+  if ($('cancelEdit')) {
+    $('cancelEdit').onclick = () => {
+      state.eventEdit = null;
+      renderEvents();
+    };
+  }
+
+  $('eventFilter').onchange = renderEventList;
+
+  renderEventList();
+}
+
+function renderEventList() {
+  const filter = $('eventFilter')?.value || 'TODOS';
+
+  const events = sortedEvents().filter(event =>
+    filter === 'TODOS' ||
+    event.person === filter ||
+    event.person === 'TODOS'
+  );
+
+  $('eventList').innerHTML = events.length
+    ? events.map(event => eventCard(event, true)).join('')
+    : '<div class="empty">No hay actividades para este filtro.</div>';
+}
+
+function editEvent(id) {
+  const event = state.data.events.find(item =>
+    String(item.id) === String(id)
+  );
+
+  if (!event) return;
+
+  state.eventEdit = { ...event };
+
+  showView('events');
+
+  renderEvents();
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+async function removeEvent(id) {
+  if (!confirm('¿Borrar esta actividad?')) return;
+
+  try {
+    await api('deleteEvent', { id });
+
+    setStatus('Actividad eliminada.');
+
+    await loadData(true);
+  } catch (error) {
+    setStatus(error.message, true);
+  }
+}
+
+/* TAREAS Y PEDIDOS */
+
+function taskCard(task) {
+  return `
+    <div class="task-item">
+      <div style="min-width:0">
+        <div class="event-title">${esc(task.title)}</div>
+
+        <div class="event-meta">
+          ${esc(task.person)}
+          ${task.dueDate ? ' · Fecha límite: ' + fmtDate(task.dueDate) : ''}
+          ${task.notes ? '<br>' + esc(task.notes) : ''}
+        </div>
+
+        <div style="margin-top:6px">
+          ${statusPill(task.status)}
+        </div>
+      </div>
+
+      <div class="row fixed">
+        <button class="secondary small" onclick="toggleTask('${esc(task.id)}')">
+          ${task.status === 'Hecha' ? 'Reabrir' : 'Marcar hecha'}
+        </button>
+
+        <button class="danger small" onclick="removeTask('${esc(task.id)}')">
+          Borrar
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+function renderTasks() {
+  const tasks = [...(state.data.tasks || [])].sort((a,b) =>
+    (a.dueDate || '9999').localeCompare(b.dueDate || '9999')
+  );
+
+  $('tasksView').innerHTML = `
+    <div class="panel">
+      <h2>Registrar tarea o pedido</h2>
+
+      <p class="muted">
+        Anotá pendientes: solicitar acreditaciones, preparar material,
+        contactar a alguien, editar un video o coordinar una entrevista.
+      </p>
+
+      <form id="taskForm">
+        <div class="form-grid">
+          <div class="field">
+            <label>Tarea / pedido *</label>
+            <input name="title" required
+              placeholder="Ej.: Pedir autorización para entrevista">
+          </div>
+
+          <div class="field">
+            <label>Responsable *</label>
+            <select name="person">
+              ${PEOPLE.map(person => `
+                <option ${person === state.person ? 'selected' : ''}>${person}</option>
+              `).join('')}
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Fecha límite</label>
+            <input type="date" name="dueDate">
+          </div>
+
+          <div class="field">
+            <label>Estado</label>
+            <select name="status">
+              <option>Pendiente</option>
+              <option>En curso</option>
+              <option>Hecha</option>
+            </select>
+          </div>
+
+          <div class="field full">
+            <label>Notas</label>
+            <textarea name="notes" rows="3"
+              placeholder="Detalles, a quién contactar, resultado…"></textarea>
+          </div>
+        </div>
+
+        <div style="margin-top:12px">
+          <button class="primary">Guardar tarea</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="panel">
+      <h2>Seguimiento de tareas</h2>
+
+      ${tasks.length
+        ? tasks.map(taskCard).join('')
+        : '<div class="empty">Todavía no hay tareas registradas.</div>'}
+    </div>
+  `;
+
+  $('taskForm').onsubmit = async event => {
+    event.preventDefault();
+
+    const data = Object.fromEntries(
+      new FormData(event.currentTarget).entries()
+    );
+
+    try {
+      await api('saveTask', data);
+
+      setStatus('Tarea guardada.');
+
+      await loadData(true);
+    } catch (error) {
+      setStatus(error.message, true);
+    }
+  };
+}
+
+async function toggleTask(id) {
+  const task = state.data.tasks.find(item =>
+    String(item.id) === String(id)
+  );
+
+  if (!task) return;
+
+  try {
+    await api('saveTask', {
+      ...task,
+      status: task.status === 'Hecha' ? 'Pendiente' : 'Hecha'
+    });
+
+    await loadData(true);
+  } catch (error) {
+    setStatus(error.message, true);
+  }
+}
+
+async function removeTask(id) {
+  if (!confirm('¿Borrar esta tarea?')) return;
+
+  try {
+    await api('deleteTask', { id });
+
+    setStatus('Tarea eliminada.');
+
+    await loadData(true);
+  } catch (error) {
+    setStatus(error.message, true);
+  }
+}
+
+init();
+</script>
+</body>
+</html>
