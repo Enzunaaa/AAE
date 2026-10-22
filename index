@@ -54,10 +54,7 @@ header {
   padding: 4px;
 }
 
-.brand h1 {
-  font-size: 19px;
-  margin: 0;
-}
+.brand h1 { font-size: 19px; margin: 0; }
 
 .brand p {
   font-size: 12px;
@@ -65,10 +62,7 @@ header {
   margin: 5px 0 0;
 }
 
-.header-label {
-  font-size: 12px;
-  opacity: .9;
-}
+.header-label { font-size: 12px; opacity: .9; }
 
 main {
   max-width: 1200px;
@@ -373,13 +367,13 @@ select:focus-visible, textarea:focus-visible {
 </head>
 
 <body>
-
 <header>
   <div class="brand">
     <img
       src="./logoaae.png"
       alt="Logo de Asociación Atlética Estudiantes de Río Cuarto"
       class="club-logo"
+      onerror="this.style.display='none'"
     >
     <div>
       <h1>Organización del equipo</h1>
@@ -390,7 +384,6 @@ select:focus-visible, textarea:focus-visible {
 </header>
 
 <main id="app">
-
   <div class="notice">
     El ingreso es por nombre, sin contraseña. Cualquier usuario podría
     seleccionar el nombre de otra persona. No carguen información sensible.
@@ -420,16 +413,10 @@ select:focus-visible, textarea:focus-visible {
   <section id="availabilityView" class="hidden"></section>
   <section id="eventsView" class="hidden"></section>
   <section id="tasksView" class="hidden"></section>
-
 </main>
 
 <script>
-/*
- * IMPORTANTE:
- * Reemplazar la URL de ejemplo por la URL real de Apps Script.
- * Debe terminar en /exec.
- */
-const API_URL = 'PEGAR_URL_WEB_APP_AQUI';
+const API_URL = 'https://script.google.com/macros/s/AKfycbwiVO15KY_tYtEdc83EUVzAr1kdvDj0tVRXvplWrN5j8QY6aFUmsn2o_5s9UtNz9D6pzQ/exec';
 
 const PEOPLE = ['SOFI', 'TIZI', 'ALE', 'MARTIN', 'MAGA', 'ENZO'];
 
@@ -471,7 +458,6 @@ let state = {
 
 const todayISO = () => {
   const d = new Date();
-
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 };
 
@@ -491,25 +477,17 @@ const personPale = p => PALE[p] || '#edf2f7';
 
 const fmtDate = value => {
   if (!value) return 'Sin fecha';
-
   const [y,m,d] = String(value).slice(0,10).split('-').map(Number);
-
   return new Date(y,m-1,d).toLocaleDateString('es-AR', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric'
+    day: '2-digit', month: 'short', year: 'numeric'
   });
 };
 
 const fmtShort = value => {
   if (!value) return '';
-
   const [y,m,d] = String(value).slice(0,10).split('-').map(Number);
-
   return new Date(y,m-1,d).toLocaleDateString('es-AR', {
-    weekday: 'short',
-    day: 'numeric',
-    month: 'short'
+    weekday: 'short', day: 'numeric', month: 'short'
   });
 };
 
@@ -518,27 +496,20 @@ function setStatus(message, error = false) {
   $('status').style.color = error ? '#b42318' : '#65758b';
 }
 
-/*
- * Comunicación con Apps Script mediante JSONP.
- */
+/* Conexión con Google Apps Script mediante JSONP */
 function api(action, data = {}) {
   return new Promise((resolve, reject) => {
     if (!API_URL || API_URL.includes('PEGAR_URL')) {
-      reject(new Error(
-        'Falta pegar la URL real de Apps Script en index.html.'
-      ));
+      reject(new Error('Falta configurar la URL de Apps Script.'));
       return;
     }
 
-    const callback = 'clubCallback' +
-      Date.now() +
+    const callback = 'clubCallback' + Date.now() +
       Math.floor(Math.random() * 100000);
-
     const script = document.createElement('script');
 
     const timer = setTimeout(() => {
       cleanup();
-
       reject(new Error(
         'La conexión tardó demasiado. Revisá la URL y los permisos de Apps Script.'
       ));
@@ -546,19 +517,16 @@ function api(action, data = {}) {
 
     function cleanup() {
       clearTimeout(timer);
-
       try {
         delete window[callback];
       } catch (e) {
         window[callback] = undefined;
       }
-
       script.remove();
     }
 
     window[callback] = result => {
       cleanup();
-
       if (result && result.ok === false) {
         reject(new Error(result.error || 'Error del servidor'));
       } else {
@@ -566,18 +534,13 @@ function api(action, data = {}) {
       }
     };
 
-    const params = new URLSearchParams({
-      action,
-      callback
-    });
-
+    const params = new URLSearchParams({ action, callback });
     if (Object.keys(data).length) {
       params.set('data', JSON.stringify(data));
     }
 
     script.onerror = () => {
       cleanup();
-
       reject(new Error(
         'No se pudo conectar con Apps Script. Revisá la implementación y sus permisos.'
       ));
@@ -591,25 +554,24 @@ function api(action, data = {}) {
 async function loadData(silent = false) {
   try {
     if (!silent) setStatus('Actualizando información…');
-
     const data = await api('init');
-    state.data = data;
+
+    state.data = {
+      people: data.people || [],
+      availability: data.availability || [],
+      events: data.events || [],
+      tasks: data.tasks || []
+    };
 
     renderAll();
 
-    setStatus(
-      'Datos actualizados · ' +
+    setStatus('Conexión correcta · Datos actualizados ' +
       new Date().toLocaleTimeString('es-AR', {
-        hour: '2-digit',
-        minute: '2-digit'
-      })
-    );
+        hour: '2-digit', minute: '2-digit'
+      }));
   } catch (error) {
-    setStatus(error.message, true);
-
-    if (!state.data.people.length && !state.data.events.length) {
-      renderAll();
-    }
+    setStatus('Error: ' + error.message, true);
+    renderAll();
   }
 }
 
@@ -618,15 +580,13 @@ function init() {
     `<option value="${person}">${person}</option>`
   ).join('');
 
+  if (!PEOPLE.includes(state.person)) state.person = 'SOFI';
   $('personSelect').value = state.person;
 
   $('enterBtn').onclick = () => {
     state.person = $('personSelect').value;
-
     localStorage.setItem('clubPerson', state.person);
-
     renderAll();
-
     setStatus('Panel abierto para ' + state.person);
   };
 
@@ -634,9 +594,7 @@ function init() {
 
   $('tabs').addEventListener('click', event => {
     const button = event.target.closest('[data-view]');
-
     if (!button) return;
-
     showView(button.dataset.view);
   });
 
@@ -647,10 +605,7 @@ function showView(view) {
   state.view = view;
 
   document.querySelectorAll('.tab').forEach(button => {
-    button.classList.toggle(
-      'active',
-      button.dataset.view === view
-    );
+    button.classList.toggle('active', button.dataset.view === view);
   });
 
   ['dashboard', 'calendar', 'availability', 'events', 'tasks']
@@ -676,7 +631,7 @@ function sortedEvents() {
 }
 
 function statusPill(status) {
-  const color = status === 'Realizada' ? '#18845b'
+  const color = status === 'Realizada' || status === 'Hecha' ? '#18845b'
     : status === 'Cancelada' ? '#b42318'
     : status === 'En curso' ? '#1769aa'
     : '#8a5b0a';
@@ -692,28 +647,16 @@ function eventCard(event, controls = false) {
           <span class="dot" style="background:${personColor(event.person)};margin-right:5px"></span>
           ${esc(event.title)}
         </div>
-
         <div class="event-meta">
           ${esc(event.person)} · ${fmtDate(event.date)} ·
           ${esc(event.start || '')}–${esc(event.end || '')}<br>
-
           ${esc(event.type || 'Actividad')}
           ${event.location ? ' · ' + esc(event.location) : ''}
-
-          ${event.needs
-            ? '<br><b>Necesita:</b> ' + esc(event.needs)
-            : ''}
-
-          ${event.description
-            ? '<br>' + esc(event.description)
-            : ''}
+          ${event.needs ? '<br><b>Necesita:</b> ' + esc(event.needs) : ''}
+          ${event.description ? '<br>' + esc(event.description) : ''}
         </div>
-
-        <div style="margin-top:6px">
-          ${statusPill(event.status)}
-        </div>
+        <div style="margin-top:6px">${statusPill(event.status)}</div>
       </div>
-
       ${controls ? `
         <div class="row fixed" style="flex-direction:column;align-items:flex-end">
           <button class="secondary small" onclick="editEvent('${esc(event.id)}')">Editar</button>
@@ -724,8 +667,7 @@ function eventCard(event, controls = false) {
   `;
 }
 
-/* RESUMEN GENERAL */
-
+/* RESUMEN */
 function renderDashboard() {
   const today = todayISO();
   const events = sortedEvents();
@@ -748,13 +690,11 @@ function renderDashboard() {
         <div class="v">${PEOPLE.length}</div>
         <div class="sub">Equipo registrado</div>
       </div>
-
       <div class="stat">
         <div class="k">ACTIVIDADES HOY</div>
         <div class="v">${todayEvents.length}</div>
         <div class="sub">${fmtDate(today)}</div>
       </div>
-
       <div class="stat">
         <div class="k">PRÓXIMAS ACTIVIDADES</div>
         <div class="v">${events.filter(event =>
@@ -762,7 +702,6 @@ function renderDashboard() {
         ).length}</div>
         <div class="sub">Desde hoy en adelante</div>
       </div>
-
       <div class="stat">
         <div class="k">TAREAS PENDIENTES</div>
         <div class="v">${pending}</div>
@@ -772,17 +711,14 @@ function renderDashboard() {
 
     <div class="panel" style="margin-top:16px">
       <h2>Equipo · situación general</h2>
-
       <div class="people-grid">
         ${PEOPLE.map(person => {
           const availability = state.data.availability.filter(item =>
             item.person === person && item.date === today
           );
-
           const personalEvents = events.filter(event =>
             (event.person === person || event.person === 'TODOS') &&
-            event.date === today &&
-            event.status !== 'Cancelada'
+            event.date === today && event.status !== 'Cancelada'
           );
 
           return `
@@ -792,7 +728,6 @@ function renderDashboard() {
                   style="background:${personPale(person)};color:${personColor(person)}">
                   ${person.slice(0,2)}
                 </div>
-
                 <div>
                   <div class="person-name">${person}</div>
                   <div class="muted">
@@ -802,7 +737,6 @@ function renderDashboard() {
                   </div>
                 </div>
               </div>
-
               ${availability.length
                 ? availability.map(item => `
                     <div class="event-meta">
@@ -811,7 +745,6 @@ function renderDashboard() {
                     </div>
                   `).join('')
                 : '<div class="event-meta">Disponibilidad no informada para hoy.</div>'}
-
               ${personalEvents.map(event => `
                 <div class="event-meta" style="margin-top:7px">
                   <b>${esc(event.start)} ${esc(event.title)}</b>
@@ -826,34 +759,26 @@ function renderDashboard() {
 
     <div class="panel">
       <h2>Próximas actividades</h2>
-
       ${upcoming.length
         ? upcoming.map(event => eventCard(event)).join('')
         : '<div class="empty">Todavía no hay actividades agendadas.</div>'}
-
       <button class="primary" onclick="showView('events')">+ Cargar actividad</button>
     </div>
 
     <div class="panel">
       <h2>Tareas que requieren seguimiento</h2>
-
       ${tasks.filter(task => task.status !== 'Hecha')
-        .slice(0,5)
-        .map(taskCard)
-        .join('')
+        .slice(0,5).map(taskCard).join('')
         || '<div class="empty">No hay tareas pendientes registradas.</div>'}
     </div>
   `;
 }
 
-/* CALENDARIO SEMANAL Y MENSUAL */
-
+/* CALENDARIO */
 function startWeek(date) {
   const d = new Date(date);
-
   d.setHours(0,0,0,0);
   d.setDate(d.getDate() - ((d.getDay() + 6) % 7));
-
   return d;
 }
 
@@ -868,7 +793,6 @@ function moveCalendar(amount) {
     state.calDate = new Date(state.calDate);
     state.calDate.setDate(state.calDate.getDate() + amount * 7);
   }
-
   renderCalendar();
 }
 
@@ -886,7 +810,6 @@ function renderCalendar() {
   const root = $('calendarView');
   const date = new Date(state.calDate);
   const mode = state.calMode;
-
   const months = [
     'enero','febrero','marzo','abril','mayo','junio',
     'julio','agosto','septiembre','octubre','noviembre','diciembre'
@@ -903,7 +826,6 @@ function renderCalendar() {
           <h2 style="margin:0">Calendario del equipo</h2>
           <div class="muted">Cada color identifica a un colaborador</div>
         </div>
-
         <div class="row fixed">
           <button class="secondary" onclick="moveCalendar(-1)">‹</button>
           <button class="secondary" onclick="calendarToday()">Hoy</button>
@@ -914,20 +836,13 @@ function renderCalendar() {
             onclick="setCalMode('week')">Semana</button>
         </div>
       </div>
-
       <h3 style="text-transform:capitalize">${title}</h3>
-
       <div class="legend">
         ${PEOPLE.map(person => `
-          <span>
-            <i class="dot" style="background:${personColor(person)}"></i>
-            ${person}
-          </span>
+          <span><i class="dot" style="background:${personColor(person)}"></i>${person}</span>
         `).join('')}
       </div>
-
       ${mode === 'month' ? monthCalendar(date) : weekCalendar(date)}
-
       <div style="margin-top:14px">
         <button class="primary" onclick="showView('events')">+ Agregar actividad</button>
       </div>
@@ -941,14 +856,11 @@ function monthCalendar(date) {
   const today = todayISO();
 
   let html = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom']
-    .map(day => `<div class="day-name">${day}</div>`)
-    .join('');
+    .map(day => `<div class="day-name">${day}</div>`).join('');
 
   for (let i = 0; i < 42; i++) {
     const current = new Date(start);
-
     current.setDate(start.getDate() + i);
-
     const iso = dateISO(current);
 
     const events = sortedEvents().filter(event =>
@@ -958,7 +870,6 @@ function monthCalendar(date) {
     html += `
       <div class="day ${current.getMonth() !== date.getMonth() ? 'outside' : ''} ${iso === today ? 'today' : ''}">
         <div class="day-num">${current.getDate()}</div>
-
         ${events.slice(0,3).map(event => `
           <div class="cal-event"
             title="${esc(event.title)} · ${esc(event.person)}"
@@ -966,29 +877,21 @@ function monthCalendar(date) {
             ${esc(event.start)} ${esc(event.title)}
           </div>
         `).join('')}
-
-        ${events.length > 3
-          ? `<div class="muted">+${events.length-3} más</div>`
-          : ''}
+        ${events.length > 3 ? `<div class="muted">+${events.length-3} más</div>` : ''}
       </div>
     `;
   }
-
   return `<div class="calendar">${html}</div>`;
 }
 
 function weekCalendar(date) {
   const start = startWeek(date);
-
   return `
     <div class="week-list">
       ${Array.from({length:7}, (_,i) => {
         const current = new Date(start);
-
         current.setDate(start.getDate() + i);
-
         const iso = dateISO(current);
-
         const events = sortedEvents().filter(event =>
           event.date === iso && event.status !== 'Cancelada'
         );
@@ -996,13 +899,11 @@ function weekCalendar(date) {
         return `
           <div class="week-col">
             <div class="week-date">${fmtShort(iso)}</div>
-
             ${events.map(event => `
               <div class="cal-event"
                 style="background:${personPale(event.person)};border-left:3px solid ${personColor(event.person)}">
                 <b>${esc(event.start)}–${esc(event.end)}</b><br>
-                ${esc(event.title)}<br>
-                ${esc(event.person)}
+                ${esc(event.title)}<br>${esc(event.person)}
               </div>
             `).join('') || '<div class="muted">Sin eventos</div>'}
           </div>
@@ -1013,48 +914,40 @@ function weekCalendar(date) {
 }
 
 /* DISPONIBILIDAD */
-
 function renderAvailability() {
   const all = state.data.availability || [];
-
   const mine = all.filter(item => item.person === state.person)
     .sort((a,b) => (a.date+a.start).localeCompare(b.date+b.start));
 
   $('availabilityView').innerHTML = `
     <div class="panel">
       <h2>Registrar disponibilidad</h2>
-
       <p class="muted">
         Indicá el día, el horario y si estás disponible u ocupado.
         Podés registrar universidad, trabajo u otros compromisos.
       </p>
-
       <form id="availabilityForm">
         <div class="form-grid">
           <div class="field">
             <label>Colaborador</label>
             <select name="person">
               ${PEOPLE.map(person => `
-                <option ${person === state.person ? 'selected' : ''}>${person}</option>
+                <option value="${person}" ${person === state.person ? 'selected' : ''}>${person}</option>
               `).join('')}
             </select>
           </div>
-
           <div class="field">
             <label>Fecha</label>
             <input type="date" name="date" value="${todayISO()}" required>
           </div>
-
           <div class="field">
             <label>Desde</label>
             <input type="time" name="start" value="09:00" required>
           </div>
-
           <div class="field">
             <label>Hasta</label>
             <input type="time" name="end" value="13:00" required>
           </div>
-
           <div class="field">
             <label>Estado</label>
             <select name="status">
@@ -1063,13 +956,11 @@ function renderAvailability() {
               <option>No disponible</option>
             </select>
           </div>
-
           <div class="field">
             <label>Motivo / actividad</label>
             <input name="description" placeholder="Universidad, trámite, trabajo…">
           </div>
         </div>
-
         <div style="margin-top:12px">
           <button class="primary">Guardar disponibilidad</button>
         </div>
@@ -1078,17 +969,10 @@ function renderAvailability() {
 
     <div class="panel">
       <h2>Disponibilidad registrada · ${state.person}</h2>
-
       ${mine.length ? mine.map(item => `
         <div class="avail-row">
-          <div style="min-width:95px">
-            <b>${fmtShort(item.date)}</b>
-          </div>
-
-          <div style="min-width:95px">
-            ${esc(item.start)}–${esc(item.end)}
-          </div>
-
+          <div style="min-width:95px"><b>${fmtShort(item.date)}</b></div>
+          <div style="min-width:95px">${esc(item.start)}–${esc(item.end)}</div>
           <div style="flex:1">
             <span class="pill">${esc(item.status)}</span>
             ${esc(item.description || '')}
@@ -1104,10 +988,8 @@ function renderAvailability() {
   `;
 
   const form = $('availabilityForm');
-
   form.onsubmit = async event => {
     event.preventDefault();
-
     const data = Object.fromEntries(new FormData(form).entries());
 
     if (data.end <= data.start) {
@@ -1127,24 +1009,17 @@ function renderAvailability() {
 
 function teamAvailability() {
   const start = new Date();
-
   return `
     <div class="week-list">
       ${Array.from({length:7}, (_,i) => {
         const current = new Date(start);
-
         current.setDate(current.getDate() + i);
-
         const iso = dateISO(current);
-
-        const rows = (state.data.availability || []).filter(item =>
-          item.date === iso
-        );
+        const rows = (state.data.availability || []).filter(item => item.date === iso);
 
         return `
           <div class="week-col">
             <div class="week-date">${fmtShort(iso)}</div>
-
             ${rows.map(item => `
               <div class="event-meta" style="margin:6px 0">
                 <span class="dot" style="background:${personColor(item.person)}"></span>
@@ -1162,14 +1037,12 @@ function teamAvailability() {
 }
 
 /* ACTIVIDADES Y COBERTURAS */
-
 function renderEvents() {
   const editing = state.eventEdit || {};
 
   $('eventsView').innerHTML = `
     <div class="panel">
       <h2>${editing.id ? 'Editar actividad' : 'Agregar actividad o cobertura'}</h2>
-
       <p class="muted">
         Cargá partidos, coberturas, reuniones, contenido para redes
         y otros compromisos del club.
@@ -1177,102 +1050,70 @@ function renderEvents() {
 
       <form id="eventForm">
         <input type="hidden" name="id" value="${esc(editing.id || '')}">
-
         <div class="form-grid">
           <div class="field">
             <label>Nombre de la actividad *</label>
-            <input name="title" required
-              value="${esc(editing.title || '')}"
+            <input name="title" required value="${esc(editing.title || '')}"
               placeholder="Ej.: Cobertura de entrenamiento">
           </div>
-
           <div class="field">
             <label>Responsable *</label>
             <select name="person">
               ${['TODOS', ...PEOPLE].map(person => `
-                <option ${person === (editing.person || state.person) ? 'selected' : ''}>${person}</option>
+                <option value="${person}" ${person === (editing.person || state.person) ? 'selected' : ''}>${person}</option>
               `).join('')}
             </select>
           </div>
-
           <div class="field">
             <label>Fecha *</label>
-            <input type="date" name="date" required
-              value="${esc(editing.date || todayISO())}">
+            <input type="date" name="date" required value="${esc(editing.date || todayISO())}">
           </div>
-
           <div class="field">
             <label>Tipo de actividad *</label>
             <select name="type">
               ${[
-                'Prensa',
-                'Partido',
-                'Cobertura',
-                'Reunión',
-                'Contenido para redes',
-                'Gestión institucional',
-                'Otro'
+                'Prensa','Partido','Cobertura','Reunión',
+                'Contenido para redes','Gestión institucional','Otro'
               ].map(type => `
-                <option ${type === (editing.type || 'Prensa') ? 'selected' : ''}>${type}</option>
+                <option value="${type}" ${type === (editing.type || 'Prensa') ? 'selected' : ''}>${type}</option>
               `).join('')}
             </select>
           </div>
-
           <div class="field">
             <label>Hora de inicio *</label>
-            <input type="time" name="start" required
-              value="${esc(editing.start || '10:00')}">
+            <input type="time" name="start" required value="${esc(editing.start || '10:00')}">
           </div>
-
           <div class="field">
             <label>Hora de finalización *</label>
-            <input type="time" name="end" required
-              value="${esc(editing.end || '11:00')}">
+            <input type="time" name="end" required value="${esc(editing.end || '11:00')}">
           </div>
-
           <div class="field">
             <label>Lugar</label>
-            <input name="location"
-              value="${esc(editing.location || '')}"
+            <input name="location" value="${esc(editing.location || '')}"
               placeholder="Estadio, predio, universidad…">
           </div>
-
           <div class="field">
             <label>Estado</label>
             <select name="status">
-              ${[
-                'Agendado',
-                'Confirmado',
-                'En curso',
-                'Realizada',
-                'Cancelada'
-              ].map(status => `
-                <option ${status === (editing.status || 'Agendado') ? 'selected' : ''}>${status}</option>
+              ${['Agendado','Confirmado','En curso','Realizada','Cancelada'].map(status => `
+                <option value="${status}" ${status === (editing.status || 'Agendado') ? 'selected' : ''}>${status}</option>
               `).join('')}
             </select>
           </div>
-
           <div class="field full">
             <label>Qué hay que hacer / detalles</label>
             <textarea name="description" rows="3"
               placeholder="Objetivo, persona a contactar, contenido a preparar…">${esc(editing.description || '')}</textarea>
           </div>
-
           <div class="field full">
             <label>Qué necesita llevar o pedir</label>
             <textarea name="needs" rows="2"
               placeholder="Cámara, micrófono, acreditación, pedir entrevista…">${esc(editing.needs || '')}</textarea>
           </div>
         </div>
-
         <div class="row" style="margin-top:12px">
-          <button class="primary">
-            ${editing.id ? 'Guardar cambios' : 'Guardar actividad'}
-          </button>
-
-          ${editing.id
-            ? '<button type="button" class="secondary" id="cancelEdit">Cancelar edición</button>'
-            : ''}
+          <button class="primary">${editing.id ? 'Guardar cambios' : 'Guardar actividad'}</button>
+          ${editing.id ? '<button type="button" class="secondary" id="cancelEdit">Cancelar edición</button>' : ''}
         </div>
       </form>
     </div>
@@ -1280,26 +1121,22 @@ function renderEvents() {
     <div class="panel">
       <div class="row">
         <h2 style="margin:0">Agenda de actividades</h2>
-
         <div style="max-width:250px">
           <select id="eventFilter">
             <option value="TODOS">Todos los colaboradores</option>
             ${PEOPLE.map(person => `
-              <option ${person === state.person ? 'selected' : ''}>${person}</option>
+              <option value="${person}" ${person === state.person ? 'selected' : ''}>${person}</option>
             `).join('')}
           </select>
         </div>
       </div>
-
       <div id="eventList"></div>
     </div>
   `;
 
   const form = $('eventForm');
-
   form.onsubmit = async event => {
     event.preventDefault();
-
     const data = Object.fromEntries(new FormData(form).entries());
 
     if (data.end <= data.start) {
@@ -1309,11 +1146,8 @@ function renderEvents() {
 
     try {
       await api('saveEvent', data);
-
       state.eventEdit = null;
-
       setStatus('Actividad guardada.');
-
       await loadData(true);
     } catch (error) {
       setStatus(error.message, true);
@@ -1328,17 +1162,13 @@ function renderEvents() {
   }
 
   $('eventFilter').onchange = renderEventList;
-
   renderEventList();
 }
 
 function renderEventList() {
   const filter = $('eventFilter')?.value || 'TODOS';
-
   const events = sortedEvents().filter(event =>
-    filter === 'TODOS' ||
-    event.person === filter ||
-    event.person === 'TODOS'
+    filter === 'TODOS' || event.person === filter || event.person === 'TODOS'
   );
 
   $('eventList').innerHTML = events.length
@@ -1347,18 +1177,12 @@ function renderEventList() {
 }
 
 function editEvent(id) {
-  const event = state.data.events.find(item =>
-    String(item.id) === String(id)
-  );
-
+  const event = state.data.events.find(item => String(item.id) === String(id));
   if (!event) return;
 
   state.eventEdit = { ...event };
-
   showView('events');
-
   renderEvents();
-
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -1367,9 +1191,7 @@ async function removeEvent(id) {
 
   try {
     await api('deleteEvent', { id });
-
     setStatus('Actividad eliminada.');
-
     await loadData(true);
   } catch (error) {
     setStatus(error.message, true);
@@ -1377,32 +1199,23 @@ async function removeEvent(id) {
 }
 
 /* TAREAS Y PEDIDOS */
-
 function taskCard(task) {
   return `
     <div class="task-item">
       <div style="min-width:0">
         <div class="event-title">${esc(task.title)}</div>
-
         <div class="event-meta">
           ${esc(task.person)}
           ${task.dueDate ? ' · Fecha límite: ' + fmtDate(task.dueDate) : ''}
           ${task.notes ? '<br>' + esc(task.notes) : ''}
         </div>
-
-        <div style="margin-top:6px">
-          ${statusPill(task.status)}
-        </div>
+        <div style="margin-top:6px">${statusPill(task.status)}</div>
       </div>
-
       <div class="row fixed">
         <button class="secondary small" onclick="toggleTask('${esc(task.id)}')">
           ${task.status === 'Hecha' ? 'Reabrir' : 'Marcar hecha'}
         </button>
-
-        <button class="danger small" onclick="removeTask('${esc(task.id)}')">
-          Borrar
-        </button>
+        <button class="danger small" onclick="removeTask('${esc(task.id)}')">Borrar</button>
       </div>
     </div>
   `;
@@ -1416,34 +1229,28 @@ function renderTasks() {
   $('tasksView').innerHTML = `
     <div class="panel">
       <h2>Registrar tarea o pedido</h2>
-
       <p class="muted">
         Anotá pendientes: solicitar acreditaciones, preparar material,
         contactar a alguien, editar un video o coordinar una entrevista.
       </p>
-
       <form id="taskForm">
         <div class="form-grid">
           <div class="field">
             <label>Tarea / pedido *</label>
-            <input name="title" required
-              placeholder="Ej.: Pedir autorización para entrevista">
+            <input name="title" required placeholder="Ej.: Pedir autorización para entrevista">
           </div>
-
           <div class="field">
             <label>Responsable *</label>
             <select name="person">
               ${PEOPLE.map(person => `
-                <option ${person === state.person ? 'selected' : ''}>${person}</option>
+                <option value="${person}" ${person === state.person ? 'selected' : ''}>${person}</option>
               `).join('')}
             </select>
           </div>
-
           <div class="field">
             <label>Fecha límite</label>
             <input type="date" name="dueDate">
           </div>
-
           <div class="field">
             <label>Estado</label>
             <select name="status">
@@ -1452,14 +1259,12 @@ function renderTasks() {
               <option>Hecha</option>
             </select>
           </div>
-
           <div class="field full">
             <label>Notas</label>
             <textarea name="notes" rows="3"
               placeholder="Detalles, a quién contactar, resultado…"></textarea>
           </div>
         </div>
-
         <div style="margin-top:12px">
           <button class="primary">Guardar tarea</button>
         </div>
@@ -1468,7 +1273,6 @@ function renderTasks() {
 
     <div class="panel">
       <h2>Seguimiento de tareas</h2>
-
       ${tasks.length
         ? tasks.map(taskCard).join('')
         : '<div class="empty">Todavía no hay tareas registradas.</div>'}
@@ -1477,16 +1281,11 @@ function renderTasks() {
 
   $('taskForm').onsubmit = async event => {
     event.preventDefault();
-
-    const data = Object.fromEntries(
-      new FormData(event.currentTarget).entries()
-    );
+    const data = Object.fromEntries(new FormData(event.currentTarget).entries());
 
     try {
       await api('saveTask', data);
-
       setStatus('Tarea guardada.');
-
       await loadData(true);
     } catch (error) {
       setStatus(error.message, true);
@@ -1495,10 +1294,7 @@ function renderTasks() {
 }
 
 async function toggleTask(id) {
-  const task = state.data.tasks.find(item =>
-    String(item.id) === String(id)
-  );
-
+  const task = state.data.tasks.find(item => String(item.id) === String(id));
   if (!task) return;
 
   try {
@@ -1506,7 +1302,6 @@ async function toggleTask(id) {
       ...task,
       status: task.status === 'Hecha' ? 'Pendiente' : 'Hecha'
     });
-
     await loadData(true);
   } catch (error) {
     setStatus(error.message, true);
@@ -1518,9 +1313,7 @@ async function removeTask(id) {
 
   try {
     await api('deleteTask', { id });
-
     setStatus('Tarea eliminada.');
-
     await loadData(true);
   } catch (error) {
     setStatus(error.message, true);
