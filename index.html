@@ -338,6 +338,24 @@ select:focus-visible, textarea:focus-visible {
   color: var(--muted);
 }
 
+/* PEDIDOS DE DISEÑO */
+.design-panel {
+  padding: 0;
+  overflow: hidden;
+}
+
+.design-intro {
+  padding: 18px 18px 12px;
+}
+
+.design-frame {
+  display: block;
+  width: 100%;
+  min-height: 1200px;
+  border: 0;
+  background: #f3f7fb;
+}
+
 @media (max-width: 850px) {
   .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .people-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -362,6 +380,7 @@ select:focus-visible, textarea:focus-visible {
   .week-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .toolbar { align-items: flex-start; }
   .event-item, .task-item { gap: 7px; }
+  .design-frame { min-height: 1350px; }
 }
 </style>
 </head>
@@ -406,6 +425,7 @@ select:focus-visible, textarea:focus-visible {
     <button class="tab" data-view="availability">Disponibilidad</button>
     <button class="tab" data-view="events">Actividades</button>
     <button class="tab" data-view="tasks">Tareas y pedidos</button>
+    <button class="tab" data-view="design">Pedidos de Diseño</button>
   </nav>
 
   <section id="dashboardView"></section>
@@ -413,6 +433,25 @@ select:focus-visible, textarea:focus-visible {
   <section id="availabilityView" class="hidden"></section>
   <section id="eventsView" class="hidden"></section>
   <section id="tasksView" class="hidden"></section>
+
+  <section id="designView" class="hidden">
+    <div class="panel design-panel">
+      <div class="design-intro">
+        <h2>Pedidos de Diseño</h2>
+        <p class="muted">
+          Completá el formulario para solicitar una pieza gráfica al Área de Diseño.
+          Podés adjuntar imágenes, logos, documentos y referencias.
+        </p>
+      </div>
+      <iframe
+        class="design-frame"
+        src="https://script.google.com/macros/s/AKfycbzyu2wQLPfDlGn6QeQPg01ozNWzXew6wF1DnCtWAWOphnixer58h4oWq4SmrUHaFozr/exec?view=request"
+        title="Formulario de pedidos de diseño"
+        loading="lazy"
+        referrerpolicy="strict-origin-when-cross-origin">
+      </iframe>
+    </div>
+  </section>
 </main>
 
 <script>
@@ -608,7 +647,7 @@ function showView(view) {
     button.classList.toggle('active', button.dataset.view === view);
   });
 
-  ['dashboard', 'calendar', 'availability', 'events', 'tasks']
+  ['dashboard', 'calendar', 'availability', 'events', 'tasks', 'design']
     .forEach(name => {
       $(name + 'View').classList.toggle('hidden', name !== view);
     });
