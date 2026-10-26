@@ -406,6 +406,7 @@ select:focus-visible, textarea:focus-visible {
     <button class="tab" data-view="availability">Disponibilidad</button>
     <button class="tab" data-view="events">Actividades</button>
     <button class="tab" data-view="tasks">Tareas y pedidos</button>
+    <button class="tab" data-view="design">Pedidos de Diseño</button>
   </nav>
 
   <section id="dashboardView"></section>
@@ -413,6 +414,7 @@ select:focus-visible, textarea:focus-visible {
   <section id="availabilityView" class="hidden"></section>
   <section id="eventsView" class="hidden"></section>
   <section id="tasksView" class="hidden"></section>
+  <section id="designView" class="hidden"><div class="panel"><h2>Pedidos de Diseño</h2><p class="muted">Completá el pedido y adjuntá las referencias. Fernán recibirá el pedido y el seguimiento se comunicará por correo.</p><iframe title="Formulario de pedidos de diseño AAE" src="https://script.google.com/macros/s/AKfycbzyu2wQLPfDlGn6QeQPg01ozNWzXew6wF1DnCtWAWOphnixer58h4oWq4SmrUHaFozr/exec?view=request" style="width:100%;height:1100px;border:0;border-radius:12px;background:#fff" loading="lazy"></iframe></div></section>
 </main>
 
 <script>
@@ -608,7 +610,7 @@ function showView(view) {
     button.classList.toggle('active', button.dataset.view === view);
   });
 
-  ['dashboard', 'calendar', 'availability', 'events', 'tasks']
+  ['dashboard', 'calendar', 'availability', 'events', 'tasks', 'design']
     .forEach(name => {
       $(name + 'View').classList.toggle('hidden', name !== view);
     });
